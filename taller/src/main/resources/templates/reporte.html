@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${reporte.titulo})}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+    <div th:replace="~{fragments :: mensajes}"></div>
+    <h1 th:text="${reporte.titulo}"></h1>
+    <div class="barra">
+        <a class="btn" th:href="${pdfUrl}" target="_blank">Exportar a PDF</a>
+        <a class="btn sec" th:href="@{/reportes}">Volver a los reportes</a>
+    </div>
+    <div class="tabla-scroll">
+        <table>
+            <thead><tr><th th:each="c : ${reporte.columnas}" th:text="${c}"></th></tr></thead>
+            <tbody>
+            <tr th:each="fila : ${reporte.filas}">
+                <td th:each="valor : ${fila}" th:text="${valor}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(reporte.filas)}"><td th:colspan="${#lists.size(reporte.columnas)}">No hay datos para este reporte.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p class="pie-reporte" th:if="${reporte.pie != null}" th:text="${reporte.pie}"></p>
+</main>
+</body>
+</html>

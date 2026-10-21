@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Repuestos')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+    <div th:replace="~{fragments :: mensajes}"></div>
+    <h1>Repuestos</h1>
+    <section class="tarjeta">
+        <h2 th:text="${edicion} ? 'Modificar repuesto' : 'Registrar repuesto'">Registrar repuesto</h2>
+        <form th:action="@{/repuestos/guardar}" method="post" class="formulario">
+            <input type="hidden" name="edicion" th:value="${edicion}">
+            <label>Identificador
+                <input name="id" th:value="${repuesto.id}" th:readonly="${edicion}" required maxlength="20">
+            </label>
+            <label>Nombre
+                <input name="nombre" th:value="${repuesto.nombre}" required maxlength="100">
+            </label>
+            <label>Descripción
+                <input name="descripcion" th:value="${repuesto.descripcion}" maxlength="255">
+            </label>
+            <label>Precio (Q)
+                <input type="number" name="precio" step="0.01" min="0" th:value="${repuesto.precio}" required>
+            </label>
+            <label>Existencia
+                <input type="number" name="existencia" min="0" th:value="${repuesto.existencia}" required>
+            </label>
+            <button class="btn">Guardar repuesto</button>
+            <a class="btn sec" th:if="${edicion}" th:href="@{/repuestos}">Cancelar</a>
+        </form>
+    </section>
+    <div class="barra">
+        <a class="btn sec" th:classappend="${!soloBajos} ? 'acento'" th:href="@{/repuestos}">Todos</a>
+        <a class="btn sec" th:classappend="${soloBajos} ? 'acento'" th:href="@{/repuestos(filtro='bajo')}">Agotados o con bajo inventario</a>
+    </div>
+    <div class="tabla-scroll">
+        <table>
+            <thead><tr><th>Código</th><th>Nombre</th><th>Descripción</th><th class="num">Precio</th><th class="num">Existencia</th><th>Situación</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${repuestos}">
+                <td th:text="${r.id}"></td>
+                <td th:text="${r.nombre}"></td>
+                <td th:text="${r.descripcion}"></td>
+                <td class="num" th:text="'Q ' + ${#numbers.formatDecimal(r.precio, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td class="num" th:text="${r.existencia}"></td>
+                <td>
+                    <span class="etiqueta agotado" th:if="${r.agotado}">Agotado</span>
+                    <span class="etiqueta alerta-stock" th:if="${r.bajoInventario and !r.agotado}">Bajo inventario</span>
+                </td>
+                <td class="acciones">
+                    <a class="btn sec peq" th:href="@{/repuestos(editar=${r.id})}">Modificar</a>
+                    <form class="inline" th:action="@{/repuestos/abastecer}" method="post">
+                        <input type="hidden" name="id" th:value="${r.id}">
+                        <input type="number" name="cantidad" min="1" value="1" required aria-label="Cantidad a abastecer">
+                        <button class="btn peq">Abastecer</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(repuestos)}"><td colspan="7">No hay repuestos para mostrar.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

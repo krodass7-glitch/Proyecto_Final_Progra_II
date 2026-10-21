@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Servicios')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+    <div th:replace="~{fragments :: mensajes}"></div>
+    <h1>Servicios del taller</h1>
+    <section class="tarjeta">
+        <h2 th:text="${edicion} ? 'Modificar servicio' : 'Registrar servicio'">Registrar servicio</h2>
+        <form th:action="@{/servicios/guardar}" method="post" class="formulario">
+            <input type="hidden" name="edicion" th:value="${edicion}">
+            <label>Identificador
+                <input name="id" th:value="${servicio.id}" th:readonly="${edicion}" required maxlength="20">
+            </label>
+            <label>Descripción
+                <input name="descripcion" th:value="${servicio.descripcion}" required maxlength="150">
+            </label>
+            <label>Costo de mano de obra (Q)
+                <input type="number" name="costoManoObra" step="0.01" min="0" th:value="${servicio.costoManoObra}" required>
+            </label>
+            <button class="btn">Guardar servicio</button>
+            <a class="btn sec" th:if="${edicion}" th:href="@{/servicios}">Cancelar</a>
+        </form>
+    </section>
+    <div class="tabla-scroll">
+        <table>
+            <thead><tr><th>Identificador</th><th>Descripción</th><th class="num">Mano de obra</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="s : ${servicios}">
+                <td th:text="${s.id}"></td>
+                <td th:text="${s.descripcion}"></td>
+                <td class="num" th:text="'Q ' + ${#numbers.formatDecimal(s.costoManoObra, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td class="acciones">
+                    <a class="btn sec peq" th:href="@{/servicios(editar=${s.id})}">Modificar</a>
+                    <form class="inline" th:action="@{/servicios/eliminar}" method="post" onsubmit="return confirm('¿Eliminar este servicio?')">
+                        <input type="hidden" name="id" th:value="${s.id}">
+                        <button class="btn peligro peq">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(servicios)}"><td colspan="4">Aún no hay servicios registrados.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

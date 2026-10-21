@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Órdenes de trabajo')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+    <div th:replace="~{fragments :: mensajes}"></div>
+    <h1>Órdenes de trabajo</h1>
+    <section class="tarjeta">
+        <h2>Recibir vehículo y crear orden</h2>
+        <form th:action="@{/ordenes/crear}" method="post" class="formulario">
+            <label>Vehículo
+                <select name="placa" required>
+                    <option value="" disabled selected>Seleccione un vehículo</option>
+                    <option th:each="v : ${vehiculos}" th:value="${v.placa}"
+                            th:text="${v.placa + ' - ' + v.descripcion() + ' (' + v.cliente.nombre + ')'}"></option>
+                </select>
+            </label>
+            <label>Mecánico asignado
+                <select name="mecanicoId" required>
+                    <option value="" disabled selected>Seleccione un mecánico</option>
+                    <option th:each="m : ${mecanicos}" th:value="${m.id}" th:text="${m.nombre + ' - ' + m.especialidad}"></option>
+                </select>
+            </label>
+            <label class="ancho">Descripción del problema
+                <textarea name="descripcion" rows="2" required></textarea>
+            </label>
+            <button class="btn">Crear orden</button>
+        </form>
+    </section>
+    <form method="get" th:action="@{/ordenes}" class="barra">
+        <label for="estado">Filtrar por estado</label>
+        <select id="estado" name="estado" onchange="this.form.submit()">
+            <option value="">Todos</option>
+            <option th:each="e : ${estados}" th:value="${e.name()}" th:text="${e.etiqueta}" th:selected="${e.name() == filtro}"></option>
+        </select>
+    </form>
+    <div class="tabla-scroll">
+        <table>
+            <thead><tr><th>Orden</th><th>Placa</th><th>Vehículo</th><th>Cliente</th><th>Mecánico</th><th>Estado</th><th class="num">Total</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="o : ${ordenes}">
+                <td th:text="'#' + ${o.id}"></td>
+                <td th:text="${o.vehiculo.placa}"></td>
+                <td th:text="${o.vehiculo.descripcion()}"></td>
+                <td th:text="${o.vehiculo.cliente.nombre}"></td>
+                <td th:text="${o.mecanico.nombre}"></td>
+                <td><span class="etiqueta" th:classappend="${o.estado.name()}" th:text="${o.estado.etiqueta}"></span></td>
+                <td class="num" th:text="${o.costoTotal != null} ? 'Q ' + ${#numbers.formatDecimal(o.costoTotal, 1, 'COMMA', 2, 'POINT')} : '-'"></td>
+                <td><a class="btn sec peq" th:href="@{/ordenes/{id}(id=${o.id})}">Abrir</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(ordenes)}"><td colspan="8">No hay órdenes para mostrar.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

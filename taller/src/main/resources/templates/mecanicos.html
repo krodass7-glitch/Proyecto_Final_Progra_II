@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Mecánicos')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+    <div th:replace="~{fragments :: mensajes}"></div>
+    <h1>Mecánicos</h1>
+    <section class="tarjeta">
+        <h2 th:text="${edicion} ? 'Modificar mecánico' : 'Registrar mecánico'">Registrar mecánico</h2>
+        <form th:action="@{/mecanicos/guardar}" method="post" class="formulario">
+            <input type="hidden" name="edicion" th:value="${edicion}">
+            <label>Identificador
+                <input name="id" th:value="${mecanico.id}" th:readonly="${edicion}" required maxlength="20">
+            </label>
+            <label>Nombre
+                <input name="nombre" th:value="${mecanico.nombre}" required maxlength="100">
+            </label>
+            <label>Teléfono
+                <input name="telefono" th:value="${mecanico.telefono}" maxlength="20">
+            </label>
+            <label>Especialidad
+                <input name="especialidad" th:value="${mecanico.especialidad}" maxlength="100">
+            </label>
+            <button class="btn">Guardar mecánico</button>
+            <a class="btn sec" th:if="${edicion}" th:href="@{/mecanicos}">Cancelar</a>
+        </form>
+    </section>
+    <div class="tabla-scroll">
+        <table>
+            <thead><tr><th>Identificador</th><th>Nombre</th><th>Teléfono</th><th>Especialidad</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="m : ${mecanicos}">
+                <td th:text="${m.id}"></td>
+                <td th:text="${m.nombre}"></td>
+                <td th:text="${m.telefono}"></td>
+                <td th:text="${m.especialidad}"></td>
+                <td class="acciones">
+                    <a class="btn sec peq" th:href="@{/mecanicos(editar=${m.id})}">Modificar</a>
+                    <form class="inline" th:action="@{/mecanicos/eliminar}" method="post" onsubmit="return confirm('¿Eliminar este mecánico?')">
+                        <input type="hidden" name="id" th:value="${m.id}">
+                        <button class="btn peligro peq">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(mecanicos)}"><td colspan="5">Aún no hay mecánicos registrados.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

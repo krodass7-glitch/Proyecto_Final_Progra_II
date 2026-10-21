@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Vehículos')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+    <div th:replace="~{fragments :: mensajes}"></div>
+    <h1>Vehículos</h1>
+    <section class="tarjeta">
+        <h2>Registrar vehículo</h2>
+        <form th:action="@{/vehiculos/guardar}" method="post" class="formulario">
+            <label>Placa
+                <input name="placa" required maxlength="15">
+            </label>
+            <label>Marca
+                <input name="marca" required maxlength="50">
+            </label>
+            <label>Modelo
+                <input name="modelo" required maxlength="50">
+            </label>
+            <label>Año
+                <input type="number" name="anio" min="1900" max="2100" required>
+            </label>
+            <label>Cliente
+                <select name="clienteId" required>
+                    <option value="" disabled selected>Seleccione un cliente</option>
+                    <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nombre + ' (' + c.id + ')'}"></option>
+                </select>
+            </label>
+            <button class="btn">Guardar vehículo</button>
+        </form>
+    </section>
+    <div class="tabla-scroll">
+        <table>
+            <thead><tr><th>Placa</th><th>Vehículo</th><th>Cliente</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="v : ${vehiculos}">
+                <td th:text="${v.placa}"></td>
+                <td th:text="${v.descripcion()}"></td>
+                <td th:text="${v.cliente.nombre}"></td>
+                <td class="acciones">
+                    <a class="btn sec peq" th:href="@{/reportes/vehiculo(placa=${v.placa})}">Ver historial</a>
+                    <form class="inline" th:action="@{/vehiculos/eliminar}" method="post" onsubmit="return confirm('¿Eliminar este vehículo?')">
+                        <input type="hidden" name="placa" th:value="${v.placa}">
+                        <button class="btn peligro peq">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(vehiculos)}"><td colspan="4">Aún no hay vehículos registrados.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Clientes')}"></head>
+<body>
+<header th:replace="~{fragments :: menu}"></header>
+<main>
+    <div th:replace="~{fragments :: mensajes}"></div>
+    <h1>Clientes</h1>
+    <section class="tarjeta">
+        <h2 th:text="${edicion} ? 'Modificar cliente' : 'Registrar cliente'">Registrar cliente</h2>
+        <form th:action="@{/clientes/guardar}" method="post" class="formulario">
+            <input type="hidden" name="edicion" th:value="${edicion}">
+            <label>Identificador
+                <input name="id" th:value="${cliente.id}" th:readonly="${edicion}" required maxlength="20">
+            </label>
+            <label>Nombre
+                <input name="nombre" th:value="${cliente.nombre}" required maxlength="100">
+            </label>
+            <label>Teléfono
+                <input name="telefono" th:value="${cliente.telefono}" maxlength="20">
+            </label>
+            <label>Correo electrónico
+                <input type="email" name="email" th:value="${cliente.email}" maxlength="100">
+            </label>
+            <label>Dirección
+                <input name="direccion" th:value="${cliente.direccion}" maxlength="200">
+            </label>
+            <button class="btn">Guardar cliente</button>
+            <a class="btn sec" th:if="${edicion}" th:href="@{/clientes}">Cancelar</a>
+        </form>
+    </section>
+    <div class="tabla-scroll">
+        <table>
+            <thead><tr><th>Identificador</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Dirección</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="c : ${clientes}">
+                <td th:text="${c.id}"></td>
+                <td th:text="${c.nombre}"></td>
+                <td th:text="${c.telefono}"></td>
+                <td th:text="${c.email}"></td>
+                <td th:text="${c.direccion}"></td>
+                <td class="acciones">
+                    <a class="btn sec peq" th:href="@{/clientes(editar=${c.id})}">Modificar</a>
+                    <form class="inline" th:action="@{/clientes/eliminar}" method="post" onsubmit="return confirm('¿Eliminar este cliente?')">
+                        <input type="hidden" name="id" th:value="${c.id}">
+                        <button class="btn peligro peq">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(clientes)}"><td colspan="6">Aún no hay clientes registrados.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

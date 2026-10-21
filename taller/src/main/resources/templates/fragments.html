@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' - El Último Arranque'">Taller</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header th:fragment="menu">
+    <div class="marca">El Último Arranque</div>
+    <nav>
+        <a th:href="@{/ordenes}">Órdenes de trabajo</a>
+        <a th:href="@{/clientes}">Clientes</a>
+        <a th:href="@{/vehiculos}">Vehículos</a>
+        <a th:href="@{/mecanicos}">Mecánicos</a>
+        <a th:href="@{/repuestos}">Repuestos</a>
+        <a th:href="@{/servicios}">Servicios</a>
+        <a th:href="@{/reportes}">Reportes</a>
+    </nav>
+</header>
+<div th:fragment="mensajes">
+    <div class="alerta ok" th:if="${ok}" th:text="${ok}"></div>
+    <div class="alerta error" th:if="${error}" th:text="${error}"></div>
+</div>
+</body>
+</html>
